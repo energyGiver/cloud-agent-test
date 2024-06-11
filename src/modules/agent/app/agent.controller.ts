@@ -3,7 +3,11 @@ import { config } from "@src/config";
 import * as comm from "infra-did-comm-js";
 import * as qrcode from "qrcode";
 
+import { VCRequirement } from "infra-did-comm-js/dist/src/websocket";
 import { DidCommService } from "../infrastructures/did-comm.service";
+
+const issuerDID =
+    "did:infra:01:5EX1sTeRrA7nwpFmapyUhMhzJULJSs9uByxHTc6YTAxsc58z";
 
 @Controller("agent")
 export class AgentController {
@@ -20,7 +24,7 @@ export class AgentController {
                 did: this.didCommService.getDID(),
                 serviceEndpoint: `${config.serverEndpoint}/agent`,
                 context: comm.messages.Context.fromJson({
-                    domain: "Infra-DID",
+                    domain: "newnal",
                     action: "connect"
                 })
             };
@@ -57,6 +61,27 @@ export class AgentController {
         try {
             const res = await this.didCommService.initWithConnectRequest(data);
             return res;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    @Get("vp-submit")
+    async postConnectRequest(): Promise<any> {
+        try {
+            const context = comm.messages.Context.fromJson({
+                domain: "newnal",
+                action: "connect"
+            });
+            const vcRequirement: VCRequirement[] = [
+                {
+                    vcType: "https://schema.org",
+                    issuer: "did:infra:01:5EX1sTeRrA7nwpFmapyUhMhzJULJSs9uByxHTc6YTAxsc58z"
+                }
+            ];
+
+            await this.didCommService.requestVP(vcRequirement);
+            return "OK";
         } catch (error) {
             throw error;
         }

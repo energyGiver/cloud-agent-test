@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { messages, websocket } from "infra-did-comm-js";
+import { VCRequirement } from "infra-did-comm-js/dist/src/websocket";
 
 @Injectable()
 export class DidCommService {
@@ -14,7 +15,8 @@ export class DidCommService {
             "https://ws-server.infrablockchain.net",
             this.did,
             this.mnemonic,
-            "VERIFIER"
+            "VERIFIER",
+            "wss://did.stage.infrablockspace.net"
         );
         this.agent.setDIDConnectedCallback(this.connectCallback);
     }
@@ -55,6 +57,18 @@ export class DidCommService {
             if (this.agent.isDIDConnected) {
                 return "Connected";
             }
+        } catch (error: any) {
+            throw error;
+        }
+    }
+
+    public async requestVP(vcRequirements: VCRequirement[]): Promise<any> {
+        try {
+            // if (this.agent.isDIDConnected) {
+            await this.agent.sendVPReq(vcRequirements);
+            // } else {
+            //     console.error("DID not connected");
+            // }
         } catch (error: any) {
             throw error;
         }
