@@ -3,7 +3,7 @@ import { config } from "@src/config";
 import * as comm from "infra-did-comm-js";
 import * as qrcode from "qrcode";
 
-import { VCRequirement } from "infra-did-comm-js/dist/src/websocket";
+import { VCRequirement } from "infra-did-comm-js";
 import { DidCommService } from "../infrastructures/did-comm.service";
 
 const issuerDID =
@@ -23,7 +23,7 @@ export class AgentController {
             const result = {
                 did: this.didCommService.getDID(),
                 serviceEndpoint: `${config.serverEndpoint}/agent`,
-                context: comm.messages.Context.fromJson({
+                context: comm.Context.fromJson({
                     domain: "newnal",
                     action: "connect"
                 })
@@ -39,7 +39,7 @@ export class AgentController {
     @Get("connect-request")
     async getConnectRequest(): Promise<any> {
         try {
-            const context = comm.messages.Context.fromJson({
+            const context = comm.Context.fromJson({
                 domain: "newnal",
                 action: "connect"
             });
@@ -69,7 +69,7 @@ export class AgentController {
     @Get("vp-submit")
     async postConnectRequest(): Promise<any> {
         try {
-            const context = comm.messages.Context.fromJson({
+            const context = comm.Context.fromJson({
                 domain: "newnal",
                 action: "connect"
             });
