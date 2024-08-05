@@ -7445,7 +7445,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"infra-did-js@npm:^1.1.4":
+"infra-did-js@npm:^1.1.4, infra-did-js@npm:latest":
   version: 1.1.4
   resolution: "infra-did-js@npm:1.1.4"
   dependencies:
@@ -9788,6 +9788,7 @@ __metadata:
     helmet: "npm:^7.1.0"
     husky: "npm:^9.0.11"
     infra-did-comm-js: "npm:latest"
+    infra-did-js: "npm:latest"
     jest: "npm:29.7.0"
     jsonwebtoken: "npm:^9.0.2"
     lint-staged: "npm:^15.2.2"

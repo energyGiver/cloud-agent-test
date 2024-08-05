@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { messages, websocket } from "infra-did-comm-js";
-import { VCRequirement } from "infra-did-comm-js/dist/src/websocket";
+import * as comm from "infra-did-comm-js";
+import { VerifiablePresentation } from "infra-did-js";
 
 @Injectable()
 export class DidCommService {
@@ -8,10 +8,10 @@ export class DidCommService {
         "bamboo absorb chief dog box envelope leisure pink alone service spin more";
     private did =
         "did:infra:01:5EX1sTeRrA7nwpFmapyUhMhzJULJSs9uByxHTc6YTAxsc58z";
-    private agent: websocket.InfraDIDCommAgent;
+    private agent: comm.InfraDIDCommAgent;
 
     constructor() {
-        this.agent = new websocket.InfraDIDCommAgent(
+        this.agent = new comm.InfraDIDCommAgent(
             "https://ws-server.infrablockchain.net",
             this.did,
             this.mnemonic,
@@ -19,10 +19,17 @@ export class DidCommService {
             "wss://did.stage.infrablockspace.net"
         );
         this.agent.setDIDConnectedCallback(this.connectCallback);
+        this.agent.setVPVerifyCallback(this.VPVerifyCallback);
+        this.agent.init();
     }
 
     private connectCallback(peerDID: string): void {
         console.log(`${peerDID} connected`);
+    }
+
+    private VPVerifyCallback(VP: VerifiablePresentation): boolean {
+        console.log("VPVerifyCallback", VP)
+        return true;
     }
 
     public getDID(): string {
@@ -30,21 +37,21 @@ export class DidCommService {
     }
 
     public async initCreatingConnectRequestMessage(
-        context: messages.Context
+        context: comm.Context
     ): Promise<string> {
         try {
             this.agent.init();
 
             const currentTime = Math.floor(Date.now() / 1000);
             const connectRequestMessage =
-                await websocket.createConnectRequestMessage(
+                await comm.createConnectRequestMessage(
                     this.agent,
                     currentTime,
                     context
                 );
 
             return connectRequestMessage.encode(
-                messages.CompressionLevel.MINIMAL
+                comm.CompressionLevel.MINIMAL
             );
         } catch (error: any) {
             throw error;
@@ -62,13 +69,9 @@ export class DidCommService {
         }
     }
 
-    public async requestVP(vcRequirements: VCRequirement[]): Promise<any> {
+    public async requestVP(vcRequirements: comm.VCRequirement[]): Promise<any> {
         try {
-            // if (this.agent.isDIDConnected) {
             await this.agent.sendVPReq(vcRequirements);
-            // } else {
-            //     console.error("DID not connected");
-            // }
         } catch (error: any) {
             throw error;
         }
